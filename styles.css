@@ -60,7 +60,7 @@ h1.map-title { font-family: 'UnifrakturMaguntia', cursive; font-size: 3.2rem; co
 
 /* Left Panel */
 .destinations-panel { grid-column: 1; grid-row: 2; }
-.location-list { list-style: none; padding: 0; flex-grow: 1; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #a1887f rgba(225, 209, 169, 0.8); }
+.location-list { list-style: none; padding: 0; flex-grow: 1; overflow-y: auto; overflow-x: hidden; scrollbar-width: thin; scrollbar-color: #a1887f rgba(225, 209, 169, 0.8); }
 .location-list::-webkit-scrollbar { width: 8px; }
 .location-list::-webkit-scrollbar-track { background: rgba(225, 209, 169, 0.8); border-radius: 4px;}
 .location-list::-webkit-scrollbar-thumb { background-color: #a1887f; border-radius: 4px; border: 2px solid rgba(225, 209, 169, 0.8); }
@@ -117,6 +117,32 @@ h1.map-title { font-family: 'UnifrakturMaguntia', cursive; font-size: 3.2rem; co
 .tooltip-buttons { display: flex; justify-content: space-between; margin-top: 15px; }
 .tooltip-button { padding: 8px 20px; background: #ffffff; border: 2px solid #8a7853; border-radius: 30px; font-family: 'Cinzel', serif; font-size: 0.9rem; font-weight: 600; color: #4e342e; cursor: pointer; transition: all 0.2s ease; min-width: 120px; text-align: center; }
 .tooltip-button:hover { background: #f0f0f0; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+
+/* X button on modal */
+.tooltip-close {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(138, 120, 83, 0.2);
+    color: #4e342e;
+    font-size: 20px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    line-height: 1;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.tooltip-close:hover {
+    background: rgba(138, 120, 83, 0.5);
+    transform: scale(1.1);
+}
 
 /* New UI Trinkets */
 /* Fuel Gauge */
@@ -289,6 +315,10 @@ h1.map-title { font-family: 'UnifrakturMaguntia', cursive; font-size: 3.2rem; co
     background: #45a049;
     transform: translateX(-50%) translateY(-3px);
     box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+
+.destinations-panel {
+    overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
 /* Responsive Adjustments */

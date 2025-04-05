@@ -1,3 +1,15 @@
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
 const locationsData = [
     {
         name: "Pereybere",
@@ -472,6 +484,10 @@ function initializeMap() {
         void car.offsetWidth;
         setTimeout(() => { car.style.transition = 'top 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55), left 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55)'; }, 50);
     }
+    const tooltipClose = document.querySelector('.tooltip-close');
+    tooltipClose.addEventListener('click', function() {
+        infoTooltip.classList.remove('visible');
+    });
 
     document.addEventListener('click', hideTooltipOnClickOutside);
 
@@ -483,6 +499,68 @@ function initializeMap() {
     closeModal.addEventListener('click', hideFuelModal);
     refuelButton.addEventListener('click', refuel);
 }
+
+const handleResize = debounce(function() {
+    // First ensure we have the right dimensions
+    const mapContainerRect = mapContainer.getBoundingClientRect();
+    
+    // Only proceed if the container is visible and has dimensions
+    if (mapContainerRect.width > 0 && mapContainerRect.height > 0) {
+        // Remove existing markers
+        mapContainer.querySelectorAll('.location-marker').forEach(marker => marker.remove());
+        
+        // Create new markers with correct positioning
+        locationsData.forEach(location => {
+            const marker = document.createElement('div');
+            marker.className = 'location-marker';
+            marker.style.top = `${location.top}%`;
+            marker.style.left = `${location.left}%`;
+            marker.dataset.name = location.name;
+            marker.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (currentFuel > 0) {
+                    selectLocation(location, marker);
+                } else {
+                    showFuelModal();
+                }
+            });
+            mapContainer.appendChild(marker);
+        });
+        
+        // Reposition car if needed
+        const lastVisitedLocationName = Array.from(visitedLocations).pop();
+        const carLocation = locationsData.find(loc => loc.name === lastVisitedLocationName);
+        
+        if (carLocation) {
+            // Update car position without animation
+            car.style.transition = 'none';
+            car.style.top = `${carLocation.top}%`;
+            car.style.left = `${carLocation.left}%`;
+            currentCarTop = carLocation.top;
+            currentCarLeft = carLocation.left;
+            
+            // Force reflow to ensure the transition is disabled
+            void car.offsetWidth;
+            
+            // Restore transition after repositioning
+            setTimeout(() => {
+                car.style.transition = 'top 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55), left 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55)';
+            }, 50);
+        }
+    }
+    
+    // Hide tooltip during resize
+    infoTooltip.classList.remove('visible');
+}, 250); // 250ms debounce time
+
+// Add the event listener using the debounced handler
+window.addEventListener('resize', handleResize);
+
+// Optional: Also trigger on orientation change for mobile devices
+window.addEventListener('orientationchange', function() {
+    // Wait for orientation change to complete
+    setTimeout(handleResize, 300);
+});
 
 // --- Run Initialization ---
 document.addEventListener('DOMContentLoaded', function() {
@@ -502,3 +580,4 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 500);
     }, 1100); // 2.2 seconds
 });
+
